@@ -23,3 +23,5 @@
 * Qual a importância das chaves na paralelização de tarefas?
   * Ela é peça fundamental para paralelizar o processamento de mensagens em um tópico dentro do mesmo consumer group.
   * A chave é usada para distribuir a mensagem entre as partições existentes e consequentemente entre as instâncias de um serviço dentro de um consumer group.
+* Fast Delegate
+  * Responder ao usuario o mais rápido possível, usar mensagens assíncronas.
