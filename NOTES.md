@@ -26,4 +26,4 @@
 * Fast Delegate
   * Responder ao usuario o mais rápido possível, usar mensagens assíncronas.
 * replication-factor -> útil quando utilizado um clsuter de brokers e é necessário replicar os dados para disponibilidade em caso de falha de algum broker.
-* properties.setProperty(ProducerConfig.ACKS_CONFIG, "all"); (Nivel mais forte the ack, garante que a mensagem foi entrege para o leader e deplicada para todos as replicas)
+* properties.setProperty(ProducerConfig.ACKS_CONFIG, "all"); (Nivel mais forte the ack, garante que a mensagem foi entrege para o leader e replicada para todas as replicas)
