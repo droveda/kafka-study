@@ -16,7 +16,6 @@ public class FraudDetectorService {
         try (var service = new KafkaService<>(FraudDetectorService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
                 fraudService::parse,
-                Order.class,
                 new HashMap<>())) {
             service.run();
         }
@@ -39,10 +38,12 @@ public class FraudDetectorService {
         if (isFraud(order)) {
             //pretending fraud will happen when the amount is >= 4500
             System.out.println("Order is a fraud!!!");
-            dispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order);
+            dispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order,
+                    record.value().getId().continueWith(new CorrelationId(FraudDetectorService.class.getSimpleName())));
         } else {
             System.out.println("Approved: " + order);
-            dispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), order);
+            dispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), order,
+                    record.value().getId().continueWith(new CorrelationId(FraudDetectorService.class.getSimpleName())));
         }
 
 

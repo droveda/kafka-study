@@ -21,7 +21,9 @@ public class GenerateReportsServlet extends HttpServlet {
 
         try {
 
-            batchDispatcher.send("SEND_MESSAGE_ALL_USERS", "USER_GENERATE_READING_REPORT", "USER_GENERATE_READING_REPORT");
+            batchDispatcher.send("ECOMMERCE_SEND_MESSAGE_ALL_USERS", "ECOMMERCE_USER_GENERATE_READING_REPORT",
+                    "ECOMMERCE_USER_GENERATE_READING_REPORT",
+                    new CorrelationId(GenerateReportsServlet.class.getSimpleName()));
 
             System.out.println("Sent Generate reports to all users");
             resp.getWriter().println("Reports request generated!");

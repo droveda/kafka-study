@@ -32,11 +32,11 @@ public class NewOrderServlet extends HttpServlet {
         var order = new Order(orderId, amount, email);
 
         try {
-            orderDispatcher.send("ECOMMERCE_NEW_ORDER", email, order);
+            orderDispatcher.send("ECOMMERCE_NEW_ORDER", email, order, new CorrelationId(NewOrderServlet.class.getSimpleName()));
 
             var body = "Thank you for your order! we are processing your order!";
             var emailCode = new Email("Assunto do email", body);
-            emailDispatcher.send("ECOMMERCE_SEND_EMAIL", email, emailCode);
+            emailDispatcher.send("ECOMMERCE_SEND_EMAIL", email, emailCode, new CorrelationId(NewOrderServlet.class.getSimpleName()));
 
             System.out.println("New order successfully created!");
 

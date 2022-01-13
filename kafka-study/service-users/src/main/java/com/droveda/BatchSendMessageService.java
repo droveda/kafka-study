@@ -30,9 +30,8 @@ public class BatchSendMessageService {
     public static void main(String[] args) throws SQLException {
         var batchService = new BatchSendMessageService();
         try (var service = new KafkaService<>(BatchSendMessageService.class.getSimpleName(),
-                "SEND_MESSAGE_ALL_USERS",
+                "ECOMMERCE_SEND_MESSAGE_ALL_USERS",
                 batchService::parse,
-                String.class,
                 new HashMap<>())) {
             service.run();
         }
@@ -48,7 +47,8 @@ public class BatchSendMessageService {
         var topic = message.getPayload();
 
         for (User user : getUsers()) {
-            dispatcher.send(topic, user.getUuid(), user);
+            dispatcher.send(topic, user.getUuid(), user,
+                    message.getId().continueWith(new CorrelationId(BatchSendMessageService.class.getSimpleName())));
         }
 
     }
