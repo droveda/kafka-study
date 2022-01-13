@@ -47,8 +47,9 @@ public class BatchSendMessageService {
         var topic = message.getPayload();
 
         for (User user : getUsers()) {
-            dispatcher.send(topic, user.getUuid(), user,
+            dispatcher.sendAsync(topic, user.getUuid(), user,
                     message.getId().continueWith(new CorrelationId(BatchSendMessageService.class.getSimpleName())));
+            System.out.println("Acho que enviei para " + user);
         }
 
     }

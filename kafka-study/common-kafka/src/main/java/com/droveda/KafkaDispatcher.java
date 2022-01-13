@@ -1,15 +1,13 @@
 package com.droveda;
 
 import com.droveda.util.GsonSerializer;
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.io.Closeable;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class KafkaDispatcher<T> implements Closeable {
 
@@ -29,7 +27,13 @@ public class KafkaDispatcher<T> implements Closeable {
         return properties;
     }
 
+
     public void send(String topic, String key, T payload, CorrelationId correlationId) throws ExecutionException, InterruptedException {
+        var future = sendAsync(topic, key, payload, correlationId);
+        future.get();
+    }
+
+    public Future<RecordMetadata> sendAsync(String topic, String key, T payload, CorrelationId correlationId) {
         var msg = new Message<>(correlationId, payload);
         ProducerRecord<String, Message<T>> record = new ProducerRecord<>(topic, key, msg);
         Callback callback = (data, ex) -> {
@@ -39,7 +43,7 @@ public class KafkaDispatcher<T> implements Closeable {
             }
             System.out.println("sucesso enviando - " + data.topic() + ":::partition-" + data.partition() + "/offset-" + data.offset() + "/timestamp-" + data.timestamp());
         };
-        producer.send(record, callback).get();
+        return producer.send(record, callback);
     }
 
     @Override

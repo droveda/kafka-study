@@ -1,6 +1,7 @@
 package com.droveda;
 
 import com.droveda.util.GsonDeserializer;
+import com.droveda.util.GsonSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -54,17 +55,27 @@ public class KafkaService<T> implements Closeable {
     }
 
     public void run() {
-        while (true) {
-            var records = consumer.poll(Duration.ofMillis(100));
-            if (!records.isEmpty()) {
-                System.out.println("Encontrei " + records.count() + " registros!");
 
-                for (var record : records) {
-                    try {
-                        this.parse.consume(record);
-                    } catch (Exception e) {
-                        // just logging the exception for this message
-                        e.printStackTrace();
+        try (var dqlDispatcher = new KafkaDispatcher<>()) {
+            while (true) {
+                var records = consumer.poll(Duration.ofMillis(100));
+                if (!records.isEmpty()) {
+                    System.out.println("Encontrei " + records.count() + " registros!");
+
+                    for (var record : records) {
+                        try {
+                            this.parse.consume(record);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            var message = record.value();
+                            try {
+                                dqlDispatcher.send("ECOMMERCE_DLQ", message.getId().toString(),
+                                        new GsonSerializer<>().serialize("", message),
+                                        message.getId().continueWith(new CorrelationId("DeadLetter")));
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                     }
                 }
             }
