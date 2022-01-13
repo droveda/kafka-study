@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class KafkaService<T> implements Closeable {
 
     private final String groupId;
-    private final KafkaConsumer<String, T> consumer;
+    private final KafkaConsumer<String, Message<T>> consumer;
     private final ConsumerFunction parse;
     private final Class<T> type;
 
@@ -49,7 +49,7 @@ public class KafkaService<T> implements Closeable {
         //poll de 1 em 1. Faz commit de 1 em 1
         properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
-        properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
+//        properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
 
         properties.putAll(overrideProperties);
 

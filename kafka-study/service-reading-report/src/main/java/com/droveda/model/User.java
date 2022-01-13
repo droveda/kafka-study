@@ -17,4 +17,11 @@ public class User {
         return "reports/" + uuid + "-report.txt";
 
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uuid='" + uuid + '\'' +
+                '}';
+    }
 }

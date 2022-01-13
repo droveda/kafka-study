@@ -13,7 +13,7 @@ public class FraudDetectorService {
 
     public static void main(String[] args) {
         var fraudService = new FraudDetectorService();
-        try (var service = new KafkaService<Order>(FraudDetectorService.class.getSimpleName(),
+        try (var service = new KafkaService<>(FraudDetectorService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
                 fraudService::parse,
                 Order.class,
@@ -22,7 +22,7 @@ public class FraudDetectorService {
         }
     }
 
-    private void parse(ConsumerRecord<String, Order> record) throws ExecutionException, InterruptedException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException {
         System.out.println("-----------");
         System.out.println("Processing new order, checking for fraud");
         System.out.println(record.key());
@@ -35,7 +35,7 @@ public class FraudDetectorService {
             ex.printStackTrace();
         }
 
-        var order = record.value();
+        var order = record.value().getPayload();
         if (isFraud(order)) {
             //pretending fraud will happen when the amount is >= 4500
             System.out.println("Order is a fraud!!!");
