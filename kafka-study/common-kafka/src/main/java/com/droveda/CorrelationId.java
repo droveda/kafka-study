@@ -20,4 +20,8 @@ public class CorrelationId {
     public CorrelationId continueWith(CorrelationId corr) {
         return new CorrelationId(id + "-" + corr.id);
     }
+
+    public CorrelationId continueWith(String s) {
+        return new CorrelationId(this.id + "_" + s);
+    }
 }

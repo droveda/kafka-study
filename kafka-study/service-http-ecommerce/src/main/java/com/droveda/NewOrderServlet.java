@@ -1,6 +1,6 @@
 package com.droveda;
 
-import com.droveda.model.Email;
+import com.droveda.dispatcher.KafkaDispatcher;
 import com.droveda.model.Order;
 
 import javax.servlet.ServletException;
@@ -14,13 +14,11 @@ import java.util.UUID;
 public class NewOrderServlet extends HttpServlet {
 
     private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<Order>();
-    private final KafkaDispatcher<Email> emailDispatcher = new KafkaDispatcher<Email>();
 
     @Override
     public void destroy() {
         super.destroy();
         orderDispatcher.close();
-        emailDispatcher.close();
     }
 
     @Override
@@ -33,11 +31,6 @@ public class NewOrderServlet extends HttpServlet {
 
         try {
             orderDispatcher.send("ECOMMERCE_NEW_ORDER", email, order, new CorrelationId(NewOrderServlet.class.getSimpleName()));
-
-            var body = "Thank you for your order! we are processing your order!";
-            var emailCode = new Email("Assunto do email", body);
-            emailDispatcher.send("ECOMMERCE_SEND_EMAIL", email, emailCode, new CorrelationId(NewOrderServlet.class.getSimpleName()));
-
             System.out.println("New order successfully created!");
 
             resp.getWriter().println("New order successfully created!");

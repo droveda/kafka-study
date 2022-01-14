@@ -1,5 +1,7 @@
 package com.droveda;
 
+import com.droveda.consumer.KafkaService;
+import com.droveda.dispatcher.KafkaDispatcher;
 import com.droveda.model.User;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 

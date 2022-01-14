@@ -1,7 +1,9 @@
-package com.droveda;
+package com.droveda.consumer;
 
-import com.droveda.util.GsonDeserializer;
-import com.droveda.util.GsonSerializer;
+import com.droveda.CorrelationId;
+import com.droveda.Message;
+import com.droveda.dispatcher.KafkaDispatcher;
+import com.droveda.dispatcher.GsonSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;

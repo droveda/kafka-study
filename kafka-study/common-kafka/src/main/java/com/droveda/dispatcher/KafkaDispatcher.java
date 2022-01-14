@@ -1,6 +1,7 @@
-package com.droveda;
+package com.droveda.dispatcher;
 
-import com.droveda.util.GsonSerializer;
+import com.droveda.CorrelationId;
+import com.droveda.Message;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -34,7 +35,7 @@ public class KafkaDispatcher<T> implements Closeable {
     }
 
     public Future<RecordMetadata> sendAsync(String topic, String key, T payload, CorrelationId correlationId) {
-        var msg = new Message<>(correlationId, payload);
+        var msg = new Message<>(correlationId.continueWith(topic), payload);
         ProducerRecord<String, Message<T>> record = new ProducerRecord<>(topic, key, msg);
         Callback callback = (data, ex) -> {
             if (ex != null) {
