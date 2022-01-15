@@ -1,29 +1,24 @@
 package com.droveda;
 
-import com.droveda.consumer.KafkaService;
+import com.droveda.consumer.ConsumerService;
+import com.droveda.consumer.ServiceRunner;
 import com.droveda.dispatcher.KafkaDispatcher;
 import com.droveda.model.Email;
 import com.droveda.model.Order;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
-public class EmailNewOrderService {
+public class EmailNewOrderService implements ConsumerService<Order> {
 
     private final KafkaDispatcher<Email> emailDispatcher = new KafkaDispatcher<>();
 
     public static void main(String[] args) {
-        var emailService = new EmailNewOrderService();
-        try (var service = new KafkaService<>(EmailNewOrderService.class.getSimpleName(),
-                "ECOMMERCE_NEW_ORDER",
-                emailService::parse,
-                new HashMap<>())) {
-            service.run();
-        }
+        new ServiceRunner<>(EmailNewOrderService::new).start(1);
     }
 
-    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException {
+    @Override
+    public void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException {
         System.out.println("-----------");
         System.out.println("Processing new order, preparing email");
         System.out.println(record.value());
@@ -38,5 +33,13 @@ public class EmailNewOrderService {
 
     }
 
+    @Override
+    public String getTopic() {
+        return "ECOMMERCE_NEW_ORDER";
+    }
 
+    @Override
+    public String getConsumerGroup() {
+        return EmailNewOrderService.class.getSimpleName();
+    }
 }

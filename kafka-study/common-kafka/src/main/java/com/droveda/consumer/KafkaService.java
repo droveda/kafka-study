@@ -51,6 +51,8 @@ public class KafkaService<T> implements Closeable {
 
 //        properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
 
+        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+
         properties.putAll(overrideProperties);
 
         return properties;
