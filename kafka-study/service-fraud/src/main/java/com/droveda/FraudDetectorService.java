@@ -1,6 +1,7 @@
 package com.droveda;
 
 import com.droveda.consumer.ConsumerService;
+import com.droveda.consumer.ServiceFactory;
 import com.droveda.consumer.ServiceRunner;
 import com.droveda.dispatcher.KafkaDispatcher;
 import com.droveda.model.Order;
@@ -21,7 +22,12 @@ public class FraudDetectorService implements ConsumerService<Order> {
     }
 
     public static void main(String[] args) {
-        new ServiceRunner<>(FraudDetectorService::new).start(1);
+        new ServiceRunner<>(new ServiceFactory<Order>() {
+            @Override
+            public ConsumerService<Order> create() throws Exception {
+                return new FraudDetectorService();
+            }
+        }).start(1);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class KafkaService<T> implements Closeable {
 
     private final String groupId;
     private final KafkaConsumer<String, Message<T>> consumer;
-    private final ConsumerFunction parse;
+    private final ConsumerFunction<T> parse;
 
     public KafkaService(String groupId, String topic, ConsumerFunction<T> parse, Map<String, String> map) {
         this.groupId = groupId;
